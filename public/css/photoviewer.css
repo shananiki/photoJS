@@ -1,0 +1,46 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.photo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+img {
+    max-width: 80%;
+    max-height: 80%;
+}
+#photo {
+    width: 500px;
+    height: 500px;
+}
+#prev, #next {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+#prev {
+    margin-right: 10px;
+    height: 60px;
+}
+#next {
+    margin-left: 10px;
+    height: 60px;
+}
+#photo-date {
+    align-items: center;
+    margin-top: 20px;
+    display: inline-block; 
+    padding: 10px; 
+    color: #fff;
+    font-family: omori2;
+    background-color: #000;
+    border: 3px solid #fff;
+    outline: 2px solid #000;
+}
