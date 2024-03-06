@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload</title>
+    <style>
+        .drop-area {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="drop-area" id="dropArea">
+        <p>Drag & Drop files here or click to upload</p>
+        <input type="file" id="fileElem" multiple accept="image/png, image/webp, image/jpeg" style="display: none;">
+    </div>
+    <script>
+        const dropArea = document.getElementById('dropArea');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            ([...files]).forEach(uploadFile);
+        }
+
+        function uploadFile(file) {
+            let formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(text => console.log(text))
+            .catch(error => console.error('Error:', error));
+        }
+
+        dropArea.addEventListener('click', () => {
+            document.getElementById('fileElem').click();
+        });
+
+        document.getElementById('fileElem').addEventListener('change', handleFileSelect, false);
+
+        function handleFileSelect(e) {
+            let files = e.target.files;
+            handleFiles(files);
+        }
+    </script>
+</body>
+</html>
