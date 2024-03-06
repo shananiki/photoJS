@@ -4,5 +4,5 @@ Node JS photo viewer
 Just my little project to display photos using nodeJS. Currently learning css and html.
 
 ## Installation
-npm install express sharp keypress
+npm install express sharp keypress multer
 node index.js
