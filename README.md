@@ -5,4 +5,6 @@ Just my little project to display photos using nodeJS. Currently learning css an
 
 ## Installation
 npm install express sharp keypress multer
+
+
 node index.js

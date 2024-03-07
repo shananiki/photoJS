@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Viewer</title>
     <link rel="stylesheet" href="/css/photoviewer.css">
+    <style>
+
+       
+    </style>
 </head>
 <body>
     <div class="photo-container" style="margin-top: 10px">
@@ -15,8 +19,6 @@
     <div class="photo-container">
         <div id="photo-date">23.12.2023</div>
     </div>
-    
-
 
     <script>
         const photo = document.getElementById('photo');
@@ -25,7 +27,13 @@
             fetch(url)
                 .then(response => response.blob())
                 .then(blob => {
-                    photo.src = URL.createObjectURL(blob);
+                    // Fade out old photo
+                    photo.style.opacity = 0;
+                    setTimeout(() => {
+                        photo.src = URL.createObjectURL(blob);
+                        // Fade in new photo
+                        photo.style.opacity = 1;
+                    }, 500); // Delay the image change to match the transition duration
                 })
                 .catch(error => console.error('Error fetching photo:', error));
         }
@@ -33,21 +41,11 @@
         fetchPhoto('/photoviewer');
 
         document.getElementById('next').addEventListener('click', () => {
-            fetch('/next')
-                .then(response => response.blob())
-                .then(blob => {
-                    photo.src = URL.createObjectURL(blob);
-                })
-                .catch(error => console.error('Error fetching next photo:', error));
+            fetchPhoto('/next');
         });
 
         document.getElementById('prev').addEventListener('click', () => {
-            fetch('/prev')
-                .then(response => response.blob())
-                .then(blob => {
-                    photo.src = URL.createObjectURL(blob);
-                })
-                .catch(error => console.error('Error fetching previous photo:', error));
+            fetchPhoto('/prev');
         });
 
         document.addEventListener('keydown', event => {
