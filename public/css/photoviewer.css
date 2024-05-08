@@ -50,3 +50,14 @@ img {
     border: 3px solid #fff;
     outline: 2px solid #000;
 }
+#photo-description {
+    align-items: center;
+    margin-top: 20px;
+    display: inline-block;
+    padding: 10px;
+    color: #fff;
+    font-family: omori2;
+    background-color: #000;
+    border: 3px solid #fff;
+    outline: 2px solid #000;
+}

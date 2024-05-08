@@ -6,25 +6,32 @@
     <title>Photo Viewer</title>
     <link rel="stylesheet" href="/css/photoviewer.css">
     <style>
-
-       
     </style>
 </head>
 <body>
-    <div class="photo-container" style="margin-top: 10px">
-        <button id="prev">◀</button>
-        <img id="photo" src="" alt="Photo">
-        <button id="next">▶</button>
+	<div class="photo-container" style="margin-top: 10px">
+	        <button id="prev">◀</button>
+	        <img id="photo" src="" alt="Photo">
+	        <button id="next">▶</button>
+	</div>
+	<div class="photo-container">
+		<div id="photo-date">23.12.2023</div>
+	</div>
+	<div class="photo-container">
+        <div id="photo-description">test description</div>
     </div>
-    <div class="photo-container">
-        <div id="photo-date">23.12.2023</div>
-    </div>
+
+
 
     <script>
         const photo = document.getElementById('photo');
+	var currentIndex = 1;
 
         function fetchPhoto(url) {
-            fetch(url)
+		var photoUrl = '/images/' + url;
+		var dateUrl = '/date/' + url;
+		var descriptionUrl = '/description/' + url;
+		fetch(photoUrl)
                 .then(response => response.blob())
                 .then(blob => {
                     // Fade out old photo
@@ -36,16 +43,33 @@
                     }, 500); // Delay the image change to match the transition duration
                 })
                 .catch(error => console.error('Error fetching photo:', error));
+		fetch(dateUrl)
+		.then(response => response.json())
+		.then(data => {
+		    const formattedDate = data.date;  
+		    document.getElementById('photo-date').textContent = formattedDate;
+        })
+        .catch(error => console.error('Error fetching date:', error));
+
+		fetch(descriptionUrl)
+        .then(response => response.json())
+        .then(data => {
+            const description = data.description;
+            document.getElementById('photo-description').textContent = description;
+		})
+        .catch(error => console.error('Error fetching description:', error));
         }
 
-        fetchPhoto('/photoviewer');
+        fetchPhoto(currentIndex);
 
         document.getElementById('next').addEventListener('click', () => {
-            fetchPhoto('/next');
+            currentIndex = currentIndex + 1;
+            fetchPhoto(currentIndex);
         });
 
         document.getElementById('prev').addEventListener('click', () => {
-            fetchPhoto('/prev');
+                currentIndex = currentIndex - 1;
+                fetchPhoto(currentIndex);
         });
 
         document.addEventListener('keydown', event => {
