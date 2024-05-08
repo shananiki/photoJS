@@ -1,3 +1,4 @@
+require ('dotenv').config();
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -10,12 +11,16 @@ const imagesDir = path.join(__dirname, 'images');
 app.use(express.static('public'));
 app.use('/images', express.static(imagesDir));
 
+var DB_HOST = process.env.DB_HOST;
+var DB_PASSWORD = process.env.DB_PASSWORD;
+var DB_DATABASE = process.env.DB_DATABASE;
+var DB_USER = process.env.DB_USER;
 
 const pool = mysql.createPool({
-  host: '127.0.0.1',
-  user: 'root',
-  password: 'Regenbogen1!',
-  database: 'lamp'
+  host: DB_HOST,
+  user: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_DATABASE
 });
 
 app.get('/description/:id', async (req, res) => {
