@@ -17,6 +17,8 @@ var DB_PASSWORD = process.env.DB_PASSWORD;
 var DB_DATABASE = process.env.DB_DATABASE;
 var DB_USER = process.env.DB_USER;
 
+var nextID = 4;
+
 const pool = mysql.createPool({
   host: DB_HOST,
   user: DB_USER,
@@ -30,7 +32,7 @@ app.get('/description/:id', async (req, res) => {
 		const connection = await pool.getConnection();
 
 		// Modify the SQL query to filter by lampID
-		const sql = `SELECT description FROM lamps WHERE lampID = ?`;
+		const sql = `SELECT description FROM lamp WHERE lampID = ?`;
 		const [rows] = await connection.execute(sql, [lampId]); // Add lampId as a parameter
 
 		connection.release();
@@ -55,7 +57,7 @@ app.get('/date/:id', async (req, res) => {
 		const lampId = req.params.id; 
 		const connection = await pool.getConnection();
 
-		const sql = `SELECT date FROM lamps WHERE lampID = ?`;
+		const sql = `SELECT date FROM lamp WHERE lampID = ?`;
 		const [rows] = await connection.execute(sql, [lampId]); 
 
 		connection.release();
@@ -100,7 +102,7 @@ const storage = multer.diskStorage({
         cb(null, path.join(__dirname, 'images'));
     },
     filename: function (req, file, cb) {
-        cb(null, getNextLampID() + path.extname(file.originalname));
+        cb(null, nextID + path.extname(file.originalname));
     }
 });
 
@@ -114,29 +116,49 @@ async function getNextLampID() {
 	const [rows] = await connection.execute(sql); 
 	connection.release();
 	console.log(rows[1]['nextID']);
-	return rows[1]['nextID'];
+	return rows[1]['nextID'].toString();
 }
 
-function getExtension(filename) {
-	return filename.split('.').pop();
+async function initializeNextID() {
+	try {
+		nextID = await getNextLampID();
+		console.log('Initial nextID:', nextID);
+	} catch (error) {
+		console.error('Error initializing nextID:', error);
+		// You may handle the error here, like exiting the process or setting a default value for nextID
+	}
 }
+
 
 // Upload route
 app.post('/upload', upload.single('image'), async (req, res) => {
-	const { description, date } = req.body;
+	const description = req.body.description;
+	const date = req.body.date;
 	const image = req.file.filename;
-	//const nextID = await getNextLampID();
-  
-	// Check if all fields are provided
-	if (!image || !description || !date) {
-	  return res.status(400).send('Please fill out all fields');
+	try {
+		nextID = await getNextLampID();
+	} catch (error) {
+		console.error(error);
+		return res.status(500).send('Error retrieving next lamp ID');
 	}
-  
+	// Check if all fields are provided
+	//if (!image || !description || !date) {
+	//  return res.status(400).send('Please fill out all fields');
+	//}
+	if(!image){
+		console.log("Image is null");
+	}
+	if(!description){
+		console.log("description is null");
+	}
+	if(!date){
+		console.log("date is null");
+	}
 	// Insert data into database
 	try {
 
 		const connection = await pool.getConnection();
-		const sql = `INSERT INTO lamps (lampID, image, description, date) VALUES (, ?, ?, ?)`;
+		const sql = `INSERT INTO lamp (lampID, image, description, date) VALUES (?, ?, ?, ?)`;
 		const [rows] = await connection.execute(sql, [nextID, image, description, date]); 
 		connection.release();
 	  
@@ -156,6 +178,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-
-const port = process.env.PORT || 4000;
-app.listen(port, () => console.log(`Server listening on port ${port}`));
+// initialize ID then do your thing
+initializeNextID().then(() => {
+	const port = process.env.PORT || 4000;
+	app.listen(port, () => console.log(`Server listening on port ${port}`));
+});

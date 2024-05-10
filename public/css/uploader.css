@@ -1,0 +1,33 @@
+
+.container {
+	display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.uploadform {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.uploadform input[type="text"], .uploadform button {
+	margin-bottom: 5px;
+	padding: 5px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	width: 100%;
+	box-sizing: border-box;
+	font-size: 16px;
+}
+
+.uploadform button {
+	background-color: #4caf50;
+	color: #fff;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.uploadform button:hover {
+	background-color: #45a049;
+}

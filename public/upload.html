@@ -4,26 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload</title>
+	<link rel="stylesheet" href="css/uploader.css">
     <style>
-        .drop-area {
-            width: 100%;
-            height: 200px;
-            border: 2px dashed #ccc;
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
     <div class="drop-area" id="dropArea">
-        <p>Drag & Drop files here or click to upload</p>
+        <!-- Hidden input for selecting files -->
         <input type="file" id="fileElem" multiple accept="image/png, image/webp, image/jpeg" style="display: none;">
     </div>
+
+	<div class="container">
+		<div class="uploadform">
+			<!-- Add select button -->
+			<button id="selectButton">Select</button><br>
+			<!-- Add input fields for description and date -->
+			<input type="text" id="description" placeholder="Description"><br>
+			<!-- Change type to text to allow custom date format -->
+			<input type="text" id="date" placeholder="dd.mm.YYYY"><br>
+
+			<!-- Add upload button -->
+			<button id="uploadButton">Upload</button>
+		</div>
+	</div>
     <script>
         const dropArea = document.getElementById('dropArea');
+        const descriptionInput = document.getElementById('description');
+        const dateInput = document.getElementById('date');
+        const selectButton = document.getElementById('selectButton');
+        const uploadButton = document.getElementById('uploadButton');
+        let selectedFiles = [];
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, preventDefaults, false);
@@ -44,28 +54,10 @@
         }
 
         function handleFiles(files) {
-            ([...files]).forEach(uploadFile);
+            selectedFiles = [...files];
         }
 
-        function uploadFile(file) {
-            let formData = new FormData();
-            formData.append('image', file);
-
-            fetch('/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(text => console.log(text))
-            .catch(error => console.error('Error:', error));
-        }
-
-        dropArea.addEventListener('click', () => {
+        selectButton.addEventListener('click', () => {
             document.getElementById('fileElem').click();
         });
 
@@ -75,6 +67,47 @@
             let files = e.target.files;
             handleFiles(files);
         }
+
+        // Bind upload button click event to uploadFiles function
+        uploadButton.addEventListener('click', uploadFiles);
+
+        function uploadFiles() {
+            if (selectedFiles.length === 0) {
+                console.log('No files selected for upload');
+                return;
+            }
+
+            // Iterate through selected files and upload each one
+            selectedFiles.forEach(file => {
+                let formData = new FormData();
+                formData.append('image', file);
+                formData.append('description', descriptionInput.value);
+                formData.append('date', dateInput.value);
+
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(text => console.log(text))
+                .catch(error => console.error('Error:', error));
+            });
+
+            // Clear selected files after upload
+            selectedFiles = [];
+        }
+
+        // Set today's date as default value for date input field
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+        const yyyy = today.getFullYear();
+        dateInput.value = `${dd}.${mm}.${yyyy}`;
     </script>
 </body>
 </html>
