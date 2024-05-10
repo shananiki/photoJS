@@ -95,17 +95,26 @@ app.get('/images/:id', (req, res) => {
 });
 
 // Configure Multer for file uploads
-const upload = multer({
-	dest: 'images/',
-	filename: (req, file, cb) => {
-	  cb(null, getNextLampID() + '.' + getExtension(file.originalname));
-	}
-  });
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, 'images'));
+    },
+    filename: function (req, file, cb) {
+        cb(null, getNextLampID() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage: storage });
 
 // Get next lampID
 async function getNextLampID() {
-	const [rows] = await pool.query('SELECT AUTO_INCREMENT AS nextID FROM information_schema.TABLES WHERE TABLE_NAME = "lamps"');
-	return rows[0].nextID;
+	const connection = await pool.getConnection();
+	const sql = 'SELECT AUTO_INCREMENT AS nextID FROM information_schema.TABLES WHERE TABLE_NAME = "lamps";';
+	
+	const [rows] = await connection.execute(sql); 
+	connection.release();
+	console.log(rows[1]['nextID']);
+	return rows[1]['nextID'];
 }
 
 function getExtension(filename) {
