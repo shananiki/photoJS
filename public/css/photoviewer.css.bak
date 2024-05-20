@@ -3,21 +3,10 @@
     src: url('https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2') format('woff2');
 }
 
-@keyframes scrollBackground {
-    from {
-        background-position: 0 0;
-    }
-    to {
-        background-position: -200% 0;
-    }
-}
-
 body {
     font-family: 'Fira Code', monospace;
     margin: 0;
     padding: 0;
-    background: url('/images/bg.png') repeat-x;
-    animation: scrollBackground 60s linear infinite;
 }
 .photo-container {
     display: flex;
@@ -36,19 +25,16 @@ img {
     transition: opacity 0.5s ease;
     width: 500px;
     height: 500px;
-    border: 2px solid white;
-    box-shadow: 5px 5px 10px black;
 }
 
 #prev, #next {
     background-color: #333;
     color: #fff;
-    border: 2px solid white;
+    border: none;
     padding: 10px;
     font-size: 20px;
     cursor: pointer;
     border-radius: 5px;
-    box-shadow: 5px 5px 10px black;
 }
 #prev {
     margin-right: 10px;
@@ -68,7 +54,6 @@ img {
     background-color: #000;
     border: 3px solid #fff;
     outline: 2px solid #000;
-    box-shadow: 5px 5px 10px black;
 }
 #photo-description {
     align-items: center;
@@ -80,5 +65,4 @@ img {
     background-color: #000;
     border: 3px solid #fff;
     outline: 2px solid #000;
-    box-shadow: 5px 5px 10px black;
 }
